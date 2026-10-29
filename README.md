@@ -22,7 +22,7 @@ All of these describe periods strictly *before* the month being predicted, so no
 | `0` | Client **paid** on time |
 
 ### 5. What business action could follow a high-risk prediction?
-The risk team could flag the client for **early intervention** — e.g. proactive outreach, adjusted credit limits, or closer monitoring — before the client actually misses a payment.
+The risk team could flag the client for **early intervention** before the client actually misses a payment.
 
 ### 6. What could cause data leakage?
 Initially suspected the `PAY_` columns created leakage, but tracing the timeline below shows none of the `PAY_`, `BILL_AMT`, or `PAY_AMT` columns describe the target month — they're all from *before* it, so the raw columns don't leak.
@@ -30,5 +30,3 @@ Initially suspected the `PAY_` columns created leakage, but tracing the timeline
 PAY_6 → PAY_5 → PAY_4 → PAY_3 → PAY_2 → PAY_0 → [target month]
 
 The real leakage risk is in **preprocessing**: fitting a scaler on train + test combined (instead of splitting first) lets test-set information leak into how training data is represented, making evaluation scores look better than they really are. In production, a new client's data is only ever transformed using the mean/std learned during training — there's no "whole dataset" to re-fit on.
-
-> ✅ **Correct order:** split first → fit preprocessing only on the training set.
